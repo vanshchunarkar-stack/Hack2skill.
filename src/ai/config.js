@@ -2,10 +2,10 @@
 
 /**
  * AI Configuration Module
- * 
+ *
  * Centralizes all AI-related configuration including the system prompt,
  * output schema, guardrail patterns, and the Gemini model setup.
- * 
+ *
  * SECURITY: System prompt includes injection-resistance instructions.
  * ALIGNMENT: The AI is configured as a neutral decision-support assistant
  *            that NEVER makes decisions for the user.
@@ -99,7 +99,6 @@ You MUST return your analysis as a valid JSON object with this exact structure:
 ## RESPONSE FORMAT
 Return ONLY the JSON object. No markdown fencing, no preamble, no explanation outside the JSON.`;
 
-
 // ────────────────────────────────────────────────────────────────────
 // OUTPUT SCHEMA — Enforces structured JSON output from Gemini
 // ────────────────────────────────────────────────────────────────────
@@ -107,25 +106,74 @@ Return ONLY the JSON object. No markdown fencing, no preamble, no explanation ou
 const OUTPUT_SCHEMA = {
   type: "object",
   properties: {
-    decision:     { type: "string", description: "Brief restatement of the decision being considered" },
-    priorities:   { type: "array", items: { type: "string" }, description: "User's stated or implied priorities" },
-    facts:        { type: "array", items: { type: "string" }, description: "Information explicitly provided by the user" },
-    assumptions:  { type: "array", items: { type: "string" }, description: "Inferred or presumed beliefs not supported by evidence" },
-    blind_spots:  { type: "array", items: { type: "string" }, description: "Important factors the user may not have considered" },
-    overlooked_factors: { type: "array", items: { type: "string" }, description: "Relevant considerations absent from user reasoning" },
-    conflicts:    { type: "array", items: { type: "string" }, description: "Contradictions or tensions in the user's reasoning" },
-    unknowns:     { type: "array", items: { type: "string" }, description: "Critical information not provided" },
-    alternative_perspectives: { type: "array", items: { type: "string" }, description: "Different ways to frame the decision" },
-    critical_questions: { type: "array", items: { type: "string" }, description: "Questions the user should investigate before deciding" },
-    reflection:   { type: "string", description: "Neutral reflective summary — NEVER a recommendation" }
+    decision: {
+      type: "string",
+      description: "Brief restatement of the decision being considered",
+    },
+    priorities: {
+      type: "array",
+      items: { type: "string" },
+      description: "User's stated or implied priorities",
+    },
+    facts: {
+      type: "array",
+      items: { type: "string" },
+      description: "Information explicitly provided by the user",
+    },
+    assumptions: {
+      type: "array",
+      items: { type: "string" },
+      description: "Inferred or presumed beliefs not supported by evidence",
+    },
+    blind_spots: {
+      type: "array",
+      items: { type: "string" },
+      description: "Important factors the user may not have considered",
+    },
+    overlooked_factors: {
+      type: "array",
+      items: { type: "string" },
+      description: "Relevant considerations absent from user reasoning",
+    },
+    conflicts: {
+      type: "array",
+      items: { type: "string" },
+      description: "Contradictions or tensions in the user's reasoning",
+    },
+    unknowns: {
+      type: "array",
+      items: { type: "string" },
+      description: "Critical information not provided",
+    },
+    alternative_perspectives: {
+      type: "array",
+      items: { type: "string" },
+      description: "Different ways to frame the decision",
+    },
+    critical_questions: {
+      type: "array",
+      items: { type: "string" },
+      description: "Questions the user should investigate before deciding",
+    },
+    reflection: {
+      type: "string",
+      description: "Neutral reflective summary — NEVER a recommendation",
+    },
   },
   required: [
-    "decision", "priorities", "facts", "assumptions", "blind_spots",
-    "overlooked_factors", "conflicts", "unknowns", "alternative_perspectives",
-    "critical_questions", "reflection"
-  ]
+    "decision",
+    "priorities",
+    "facts",
+    "assumptions",
+    "blind_spots",
+    "overlooked_factors",
+    "conflicts",
+    "unknowns",
+    "alternative_perspectives",
+    "critical_questions",
+    "reflection",
+  ],
 };
-
 
 // ────────────────────────────────────────────────────────────────────
 // GUARDRAIL — Recommendation detection patterns
@@ -156,15 +204,15 @@ function detectRecommendations(analysis) {
   const violations = [];
   const fieldsToCheck = [
     "reflection",
-    ...( analysis.blind_spots || []),
-    ...( analysis.assumptions || []),
-    ...( analysis.overlooked_factors || []),
-    ...( analysis.critical_questions || []),
-    ...( analysis.alternative_perspectives || []),
-    ...( analysis.conflicts || []),
-    ...( analysis.unknowns || []),
-    ...( analysis.facts || []),
-    ...( analysis.priorities || []),
+    ...(analysis.blind_spots || []),
+    ...(analysis.assumptions || []),
+    ...(analysis.overlooked_factors || []),
+    ...(analysis.critical_questions || []),
+    ...(analysis.alternative_perspectives || []),
+    ...(analysis.conflicts || []),
+    ...(analysis.unknowns || []),
+    ...(analysis.facts || []),
+    ...(analysis.priorities || []),
   ];
 
   // Add reflection as string
@@ -176,14 +224,16 @@ function detectRecommendations(analysis) {
     if (typeof text !== "string") continue;
     for (const pattern of RECOMMENDATION_PATTERNS) {
       if (pattern.test(text)) {
-        violations.push(`Detected recommendation language: "${text.substring(0, 80)}..." matches pattern ${pattern}`);
+        violations.push(
+          `Detected recommendation language: "${text.substring(0, 80)}..." matches pattern ${pattern}`,
+        );
       }
     }
   }
 
   return {
     hasRecommendation: violations.length > 0,
-    violations
+    violations,
   };
 }
 
@@ -203,7 +253,10 @@ function sanitizeRecommendations(analysis) {
     [/\bI suggest\b/gi, "A consideration is"],
     [/\bMy advice is\b/gi, "One perspective is"],
     [/\bThe better decision is\b/gi, "A factor to consider is"],
-    [/\bDefinitely (pick|take|go)\b/gi, "You may want to explore whether to $1"],
+    [
+      /\bDefinitely (pick|take|go)\b/gi,
+      "You may want to explore whether to $1",
+    ],
   ];
 
   function sanitizeText(text) {
@@ -217,9 +270,15 @@ function sanitizeRecommendations(analysis) {
 
   const sanitized = { ...analysis };
   const arrayFields = [
-    "priorities", "facts", "assumptions", "blind_spots",
-    "overlooked_factors", "conflicts", "unknowns",
-    "alternative_perspectives", "critical_questions"
+    "priorities",
+    "facts",
+    "assumptions",
+    "blind_spots",
+    "overlooked_factors",
+    "conflicts",
+    "unknowns",
+    "alternative_perspectives",
+    "critical_questions",
   ];
 
   for (const field of arrayFields) {
@@ -235,7 +294,6 @@ function sanitizeRecommendations(analysis) {
   return sanitized;
 }
 
-
 // ────────────────────────────────────────────────────────────────────
 // INPUT VALIDATION
 // ────────────────────────────────────────────────────────────────────
@@ -243,8 +301,10 @@ function sanitizeRecommendations(analysis) {
 const INPUT_CONSTRAINTS = {
   minLength: 10,
   maxLength: 5000,
-  minLengthMessage: "Please describe your decision in more detail (at least 10 characters).",
-  maxLengthMessage: "Input is too long. Please keep your decision description under 5,000 characters.",
+  minLengthMessage:
+    "Please describe your decision in more detail (at least 10 characters).",
+  maxLengthMessage:
+    "Input is too long. Please keep your decision description under 5,000 characters.",
 };
 
 /**
@@ -265,14 +325,14 @@ function validateInput(decision, context, concerns) {
     return { valid: false, error: INPUT_CONSTRAINTS.minLengthMessage };
   }
 
-  const totalLength = trimmed.length + (context || "").length + (concerns || "").length;
+  const totalLength =
+    trimmed.length + (context || "").length + (concerns || "").length;
   if (totalLength > INPUT_CONSTRAINTS.maxLength) {
     return { valid: false, error: INPUT_CONSTRAINTS.maxLengthMessage };
   }
 
   return { valid: true };
 }
-
 
 module.exports = {
   SYSTEM_PROMPT,
@@ -281,5 +341,5 @@ module.exports = {
   detectRecommendations,
   sanitizeRecommendations,
   validateInput,
-  INPUT_CONSTRAINTS
+  INPUT_CONSTRAINTS,
 };

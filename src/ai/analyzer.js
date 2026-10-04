@@ -2,7 +2,7 @@
 
 /**
  * AI Analyzer Service
- * 
+ *
  * Handles communication with the Gemini API to produce structured
  * decision analysis. Includes retry logic, output validation,
  * recommendation guardrails, and error handling.
@@ -32,7 +32,9 @@ function getModel() {
   if (!model) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey || apiKey === "your_gemini_api_key_here") {
-      throw new Error("GEMINI_API_KEY is not configured. Set it in your .env file.");
+      throw new Error(
+        "GEMINI_API_KEY is not configured. Set it in your .env file.",
+      );
     }
     genAI = new GoogleGenerativeAI(apiKey);
     model = genAI.getGenerativeModel({
@@ -48,7 +50,6 @@ function getModel() {
   }
   return model;
 }
-
 
 // ────────────────────────────────────────────────────────────────────
 // Build the user prompt from structured input
@@ -77,15 +78,22 @@ function buildUserPrompt(decision, context, concerns) {
   return prompt;
 }
 
-
 // ────────────────────────────────────────────────────────────────────
 // Validate the AI response structure
 // ────────────────────────────────────────────────────────────────────
 
 const REQUIRED_FIELDS = [
-  "decision", "priorities", "facts", "assumptions", "blind_spots",
-  "overlooked_factors", "conflicts", "unknowns", "alternative_perspectives",
-  "critical_questions", "reflection"
+  "decision",
+  "priorities",
+  "facts",
+  "assumptions",
+  "blind_spots",
+  "overlooked_factors",
+  "conflicts",
+  "unknowns",
+  "alternative_perspectives",
+  "critical_questions",
+  "reflection",
 ];
 
 function validateAnalysisStructure(analysis) {
@@ -108,9 +116,15 @@ function validateAnalysisStructure(analysis) {
   }
 
   const arrayFields = [
-    "priorities", "facts", "assumptions", "blind_spots",
-    "overlooked_factors", "conflicts", "unknowns",
-    "alternative_perspectives", "critical_questions"
+    "priorities",
+    "facts",
+    "assumptions",
+    "blind_spots",
+    "overlooked_factors",
+    "conflicts",
+    "unknowns",
+    "alternative_perspectives",
+    "critical_questions",
   ];
 
   for (const field of arrayFields) {
@@ -122,14 +136,13 @@ function validateAnalysisStructure(analysis) {
   return { valid: true };
 }
 
-
 // ────────────────────────────────────────────────────────────────────
 // Main analysis function
 // ────────────────────────────────────────────────────────────────────
 
 /**
  * Analyzes a decision for blind spots, assumptions, and overlooked factors.
- * 
+ *
  * @param {string} decision - The decision the user is considering
  * @param {string} [context] - Why they lean a certain way
  * @param {string} [concerns] - Specific concerns
@@ -171,7 +184,10 @@ async function analyzeDecision(decision, context = "", concerns = "") {
       // Guardrail: detect and sanitize recommendations
       const guardCheck = detectRecommendations(analysis);
       if (guardCheck.hasRecommendation) {
-        console.warn("[GUARDRAIL] Recommendation language detected, sanitizing:", guardCheck.violations);
+        console.warn(
+          "[GUARDRAIL] Recommendation language detected, sanitizing:",
+          guardCheck.violations,
+        );
         analysis = sanitizeRecommendations(analysis);
       }
 
@@ -182,21 +198,26 @@ async function analyzeDecision(decision, context = "", concerns = "") {
           model: "gemini-2.0-flash",
           timestamp: new Date().toISOString(),
           guardrailTriggered: guardCheck.hasRecommendation,
-        }
+        },
       };
-
     } catch (err) {
       lastError = err;
       console.error(`[AI] Attempt ${attempt + 1} failed:`, err.message);
 
       // Don't retry on auth errors
-      if (err.message?.includes("API key") || err.status === 401 || err.status === 403) {
+      if (
+        err.message?.includes("API key") ||
+        err.status === 401 ||
+        err.status === 403
+      ) {
         break;
       }
 
       // Wait before retry (exponential backoff)
       if (attempt < MAX_RETRIES) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * (attempt + 1)),
+        );
       }
     }
   }
@@ -205,10 +226,10 @@ async function analyzeDecision(decision, context = "", concerns = "") {
   return {
     success: false,
     error: "Analysis could not be completed. Please try again.",
-    details: process.env.NODE_ENV === "development" ? lastError?.message : undefined
+    details:
+      process.env.NODE_ENV === "development" ? lastError?.message : undefined,
   };
 }
-
 
 module.exports = {
   analyzeDecision,

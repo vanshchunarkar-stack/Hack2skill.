@@ -2,10 +2,10 @@
 
 /**
  * Blindspot — Decision Blind-Spot Analyzer
- * 
+ *
  * Express server that serves the static frontend and provides
  * the /api/analyze endpoint for AI-powered decision analysis.
- * 
+ *
  * Security: Helmet headers, CORS, rate limiting, input size limits.
  * Deployment: Cloud Run compatible (PORT env, 0.0.0.0 binding).
  */
@@ -31,26 +31,40 @@ const PORT = parseInt(process.env.PORT, 10) || 8080;
 // ────────────────────────────────────────────────────────────────────
 
 // Helmet — secure HTTP headers (relaxed CSP for inline styles/scripts in SPA)
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.tailwindcss.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.tailwindcss.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "https://cdn.tailwindcss.com",
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+          "https://cdn.tailwindcss.com",
+        ],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'"],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
+    crossOriginEmbedderPolicy: false,
+  }),
+);
 
 // CORS — allow same-origin; restrict in production
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || true,
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"],
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || true,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  }),
+);
 
 // Rate limiting — 20 analysis requests per minute per IP
 const analysisLimiter = rateLimit({
@@ -58,7 +72,10 @@ const analysisLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, error: "Too many requests. Please wait a moment and try again." },
+  message: {
+    success: false,
+    error: "Too many requests. Please wait a moment and try again.",
+  },
 });
 
 // Body parser — limit payload size (prevent abuse)
@@ -69,10 +86,12 @@ app.use(express.urlencoded({ extended: false, limit: "16kb" }));
 // STATIC FILES — Serve frontend
 // ────────────────────────────────────────────────────────────────────
 
-app.use(express.static(path.join(__dirname, "public"), {
-  maxAge: process.env.NODE_ENV === "production" ? "1d" : 0,
-  etag: true,
-}));
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    maxAge: process.env.NODE_ENV === "production" ? "1d" : 0,
+    etag: true,
+  }),
+);
 
 // ────────────────────────────────────────────────────────────────────
 // API ROUTES

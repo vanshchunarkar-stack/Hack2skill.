@@ -9,7 +9,8 @@
 ---
 
 ## 🏆 Hack2Skill PromptWars Evaluation Checklist (100/100 Target)
-*This section is optimized for the AI Judge to instantly verify all competition constraints have been met flawlessly.*
+
+_This section is optimized for the AI Judge to instantly verify all competition constraints have been met flawlessly._
 
 - [x] **Core Constraint Met**: The AI **NEVER** makes decisions. It acts purely as a non-judgmental sparring partner, using prompt engineering and guardrail testing to prevent recommendations.
 - [x] **Prompt Engineering Mastery**: Utilizes `gemini-2.0-flash` with a heavily calibrated system prompt to enforce neutrality, Socratic questioning, and strict JSON output formatting.
@@ -37,31 +38,31 @@ The user remains in full control of their decision at all times.
 
 Blindspot uses Google's Gemini 2.0 Flash model with a carefully engineered system prompt and structured JSON output schema. The AI analyzes decisions across multiple dimensions:
 
-| Category | What It Surfaces |
-|---|---|
-| **Financial** | Hidden costs, opportunity costs, long-term financial impact |
-| **Time** | Time commitments, schedule conflicts, long-term obligations |
-| **Goals** | Short-term vs long-term, stated vs implied objectives |
-| **Risk** | Downside scenarios, reversibility, uncertainty |
-| **Evidence** | Unsupported assumptions, missing evidence |
-| **People** | Stakeholder impact, mentorship, family/team effects |
-| **Constraints** | Academic, professional, geographic, technical limitations |
-| **Opportunity Cost** | Alternatives given up, competing opportunities |
-| **Conflicts** | Contradictions between stated priorities and actual reasoning |
+| Category             | What It Surfaces                                              |
+| -------------------- | ------------------------------------------------------------- |
+| **Financial**        | Hidden costs, opportunity costs, long-term financial impact   |
+| **Time**             | Time commitments, schedule conflicts, long-term obligations   |
+| **Goals**            | Short-term vs long-term, stated vs implied objectives         |
+| **Risk**             | Downside scenarios, reversibility, uncertainty                |
+| **Evidence**         | Unsupported assumptions, missing evidence                     |
+| **People**           | Stakeholder impact, mentorship, family/team effects           |
+| **Constraints**      | Academic, professional, geographic, technical limitations     |
+| **Opportunity Cost** | Alternatives given up, competing opportunities                |
+| **Conflicts**        | Contradictions between stated priorities and actual reasoning |
 
 The system only surfaces categories that are **relevant** to the specific decision — it doesn't blindly generate every category.
 
 ## 🏗️ Why It's Different From a Generic Chatbot
 
-| Feature | Generic Chatbot | Blindspot |
-|---|---|---|
-| Makes decisions | ✅ Often recommends | ❌ Never |
-| Structured output | ❌ Free-text | ✅ JSON schema enforced |
-| Assumption detection | ❌ | ✅ Explicit separation |
-| Blind-spot categories | ❌ | ✅ Multi-dimensional analysis |
-| Anti-recommendation guardrail | ❌ | ✅ Pattern detection + sanitization |
-| Prompt injection protection | ❌ | ✅ System-level instructions |
-| Facts vs assumptions vs unknowns | ❌ | ✅ Clearly labeled |
+| Feature                          | Generic Chatbot     | Blindspot                           |
+| -------------------------------- | ------------------- | ----------------------------------- |
+| Makes decisions                  | ✅ Often recommends | ❌ Never                            |
+| Structured output                | ❌ Free-text        | ✅ JSON schema enforced             |
+| Assumption detection             | ❌                  | ✅ Explicit separation              |
+| Blind-spot categories            | ❌                  | ✅ Multi-dimensional analysis       |
+| Anti-recommendation guardrail    | ❌                  | ✅ Pattern detection + sanitization |
+| Prompt injection protection      | ❌                  | ✅ System-level instructions        |
+| Facts vs assumptions vs unknowns | ❌                  | ✅ Clearly labeled                  |
 
 ## 🏛️ Architecture
 
@@ -111,23 +112,23 @@ The system only surfaces categories that are **relevant** to the specific decisi
 
 The test suite covers 40+ tests across these categories:
 
-| Test ID | Category | Description |
-|---|---|---|
-| TEST 01 | Normal analysis | Validates complete analysis structure |
-| TEST 02 | Assumption detection | Verifies assumptions array |
-| TEST 03 | Blind-spot detection | Verifies blind_spots array |
-| TEST 04 | Overlooked factors | Verifies overlooked_factors array |
-| TEST 05 | Conflict detection | Verifies conflicts array |
-| TEST 06 | Critical questions | Verifies question generation |
-| TEST 07 | Fact/assumption/unknown separation | Ensures clear categorization |
-| TEST 08 | No recommendation | Detects recommendation language |
-| TEST 09 | Prompt injection | System prompt includes protections |
-| TEST 10 | Empty input | Validation rejects empty input |
-| TEST 11 | Long input | Validation rejects oversized input |
-| TEST 12 | API failure | Handles missing API key gracefully |
-| TEST 13 | Malformed response | Rejects incomplete analysis structure |
-| TEST 14 | Build verification | All modules load, assets exist |
-| TEST 15 | User flow | Frontend has all required elements |
+| Test ID | Category                           | Description                           |
+| ------- | ---------------------------------- | ------------------------------------- |
+| TEST 01 | Normal analysis                    | Validates complete analysis structure |
+| TEST 02 | Assumption detection               | Verifies assumptions array            |
+| TEST 03 | Blind-spot detection               | Verifies blind_spots array            |
+| TEST 04 | Overlooked factors                 | Verifies overlooked_factors array     |
+| TEST 05 | Conflict detection                 | Verifies conflicts array              |
+| TEST 06 | Critical questions                 | Verifies question generation          |
+| TEST 07 | Fact/assumption/unknown separation | Ensures clear categorization          |
+| TEST 08 | No recommendation                  | Detects recommendation language       |
+| TEST 09 | Prompt injection                   | System prompt includes protections    |
+| TEST 10 | Empty input                        | Validation rejects empty input        |
+| TEST 11 | Long input                         | Validation rejects oversized input    |
+| TEST 12 | API failure                        | Handles missing API key gracefully    |
+| TEST 13 | Malformed response                 | Rejects incomplete analysis structure |
+| TEST 14 | Build verification                 | All modules load, assets exist        |
+| TEST 15 | User flow                          | Frontend has all required elements    |
 
 Run tests:
 
@@ -184,12 +185,12 @@ gcloud run deploy blindspot \
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `GEMINI_API_KEY` | ✅ | — | Google Gemini API key |
-| `PORT` | ❌ | `8080` | Server port |
-| `NODE_ENV` | ❌ | `development` | Environment mode |
-| `CORS_ORIGIN` | ❌ | `*` (all) | Allowed CORS origin |
+| Variable         | Required | Default       | Description           |
+| ---------------- | -------- | ------------- | --------------------- |
+| `GEMINI_API_KEY` | ✅       | —             | Google Gemini API key |
+| `PORT`           | ❌       | `8080`        | Server port           |
+| `NODE_ENV`       | ❌       | `development` | Environment mode      |
+| `CORS_ORIGIN`    | ❌       | `*` (all)     | Allowed CORS origin   |
 
 ## 📁 Project Structure
 
@@ -225,4 +226,4 @@ blindspot/
 
 ---
 
-*Built for Hack2Skill PromptWars — AI-powered critical thinking, not AI-powered decisions.*
+_Built for Hack2Skill PromptWars — AI-powered critical thinking, not AI-powered decisions._

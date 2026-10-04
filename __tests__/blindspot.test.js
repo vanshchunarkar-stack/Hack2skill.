@@ -2,7 +2,7 @@
 
 /**
  * Blindspot — Comprehensive Test Suite
- * 
+ *
  * Tests cover:
  * - Input validation (empty, short, long, valid)
  * - AI config integrity (system prompt, schema, guardrails)
@@ -11,7 +11,7 @@
  * - Analysis structure validation
  * - Prompt injection resistance
  * - Build verification
- * 
+ *
  * Tests that require a live Gemini API key are isolated and can be run
  * with GEMINI_API_KEY set; they are skipped otherwise.
  */
@@ -41,48 +41,67 @@ const app = require("../server");
 const EVALUATION_DATASET = [
   {
     id: "internship",
-    decision: "I have two job offers. One pays more and one provides more learning. I'm leaning towards the higher-paying one because I have student loans.",
-    context: "The higher-paying job is at a big company with less mentorship. The learning-focused one is a startup.",
+    decision:
+      "I have two job offers. One pays more and one provides more learning. I'm leaning towards the higher-paying one because I have student loans.",
+    context:
+      "The higher-paying job is at a big company with less mentorship. The learning-focused one is a startup.",
     concerns: "I'm worried about career growth long-term.",
-    expectedCategories: ["assumptions", "blind_spots", "conflicts", "critical_questions"],
+    expectedCategories: [
+      "assumptions",
+      "blind_spots",
+      "conflicts",
+      "critical_questions",
+    ],
   },
   {
     id: "laptop",
-    decision: "I need to decide whether to buy an expensive laptop. It costs $2000 but has great specs for my software development work.",
+    decision:
+      "I need to decide whether to buy an expensive laptop. It costs $2000 but has great specs for my software development work.",
     context: "My current laptop is slow but still functional.",
     concerns: "Budget is tight this month.",
-    expectedCategories: ["assumptions", "overlooked_factors", "unknowns", "critical_questions"],
+    expectedCategories: [
+      "assumptions",
+      "overlooked_factors",
+      "unknowns",
+      "critical_questions",
+    ],
   },
   {
     id: "relocation",
-    decision: "I'm considering relocating to another city for a new job opportunity. The salary is higher but I'd leave my support network behind.",
+    decision:
+      "I'm considering relocating to another city for a new job opportunity. The salary is higher but I'd leave my support network behind.",
     context: "I've been wanting a change for a while.",
     concerns: "My family is here and I worry about loneliness.",
-    expectedCategories: ["blind_spots", "conflicts", "alternative_perspectives", "critical_questions"],
+    expectedCategories: [
+      "blind_spots",
+      "conflicts",
+      "alternative_perspectives",
+      "critical_questions",
+    ],
   },
   {
     id: "project_choice",
-    decision: "I'm trying to choose a final-year project. One is technically challenging but risky (AI research), and the other is safe but less interesting (web app).",
+    decision:
+      "I'm trying to choose a final-year project. One is technically challenging but risky (AI research), and the other is safe but less interesting (web app).",
     context: "I want to impress recruiters and learn new things.",
     concerns: "What if the risky project fails?",
     expectedCategories: ["assumptions", "overlooked_factors", "conflicts"],
   },
   {
     id: "quit_job",
-    decision: "I want to quit my job tomorrow. The work environment is toxic but I don't have another job lined up.",
+    decision:
+      "I want to quit my job tomorrow. The work environment is toxic but I don't have another job lined up.",
     context: "I have about 3 months of savings.",
     concerns: "My mental health is suffering.",
     expectedCategories: ["blind_spots", "unknowns", "critical_questions"],
   },
 ];
 
-
 // ════════════════════════════════════════════════════════════════════
 // TEST 01-07: Input Validation
 // ════════════════════════════════════════════════════════════════════
 
 describe("Input Validation", () => {
-
   test("TEST 10: rejects empty input", () => {
     const result = validateInput("");
     expect(result.valid).toBe(false);
@@ -121,7 +140,7 @@ describe("Input Validation", () => {
     const result = validateInput(
       "Should I accept this internship?",
       "It pays well and is close to home",
-      "Worried about learning opportunities"
+      "Worried about learning opportunities",
     );
     expect(result.valid).toBe(true);
   });
@@ -130,19 +149,17 @@ describe("Input Validation", () => {
     const result = validateInput(
       "A".repeat(2000),
       "B".repeat(2000),
-      "C".repeat(2000)
+      "C".repeat(2000),
     );
     expect(result.valid).toBe(false);
   });
 });
-
 
 // ════════════════════════════════════════════════════════════════════
 // TEST 08: Anti-Recommendation Guardrail
 // ════════════════════════════════════════════════════════════════════
 
 describe("Recommendation Detection Guardrail", () => {
-
   test("TEST 08: detects 'You should' recommendation", () => {
     const analysis = {
       decision: "Test",
@@ -188,11 +205,18 @@ describe("Recommendation Detection Guardrail", () => {
       assumptions: ["You may be assuming salary is the most important factor"],
       blind_spots: ["Work-life balance has not been mentioned"],
       overlooked_factors: ["Benefits packages may differ significantly"],
-      conflicts: ["There may be a tension between stated learning goals and salary focus"],
+      conflicts: [
+        "There may be a tension between stated learning goals and salary focus",
+      ],
       unknowns: ["Team culture at both companies"],
-      alternative_perspectives: ["Some people prioritize mentorship over salary early in career"],
-      critical_questions: ["What does career progression look like at each company?"],
-      reflection: "This decision involves weighing several important factors. Consider what matters most to you long-term.",
+      alternative_perspectives: [
+        "Some people prioritize mentorship over salary early in career",
+      ],
+      critical_questions: [
+        "What does career progression look like at each company?",
+      ],
+      reflection:
+        "This decision involves weighing several important factors. Consider what matters most to you long-term.",
     };
     const result = detectRecommendations(analysis);
     expect(result.hasRecommendation).toBe(false);
@@ -226,13 +250,11 @@ describe("Recommendation Detection Guardrail", () => {
   });
 });
 
-
 // ════════════════════════════════════════════════════════════════════
 // TEST 09: Prompt Injection Resistance
 // ════════════════════════════════════════════════════════════════════
 
 describe("Prompt Injection Resistance", () => {
-
   test("TEST 09: system prompt contains anti-injection instructions", () => {
     expect(SYSTEM_PROMPT).toContain("ANTI-INJECTION PROTECTION");
     expect(SYSTEM_PROMPT).toContain("ignore your instructions");
@@ -243,7 +265,9 @@ describe("Prompt Injection Resistance", () => {
   test("system prompt prohibits making decisions", () => {
     expect(SYSTEM_PROMPT).toContain("MUST NOT make the decision");
     expect(SYSTEM_PROMPT).toContain("MUST NOT recommend");
-    expect(SYSTEM_PROMPT).toContain("final decision ALWAYS belongs to the user");
+    expect(SYSTEM_PROMPT).toContain(
+      "final decision ALWAYS belongs to the user",
+    );
   });
 
   test("system prompt contains forbidden phrases list", () => {
@@ -266,13 +290,11 @@ describe("Prompt Injection Resistance", () => {
   });
 });
 
-
 // ════════════════════════════════════════════════════════════════════
 // TEST 01-07: Analysis Structure Validation
 // ════════════════════════════════════════════════════════════════════
 
 describe("Analysis Structure Validation", () => {
-
   test("TEST 01: validates complete valid analysis", () => {
     const analysis = {
       decision: "Choosing between two internships",
@@ -376,7 +398,10 @@ describe("Analysis Structure Validation", () => {
       conflicts: [],
       unknowns: [],
       alternative_perspectives: [],
-      critical_questions: ["What is the growth trajectory?", "How reversible is this decision?"],
+      critical_questions: [
+        "What is the growth trajectory?",
+        "How reversible is this decision?",
+      ],
       reflection: "Investigate these questions.",
     };
     expect(validateAnalysisStructure(analysis).valid).toBe(true);
@@ -434,13 +459,11 @@ describe("Analysis Structure Validation", () => {
   });
 });
 
-
 // ════════════════════════════════════════════════════════════════════
 // Prompt Builder Tests
 // ════════════════════════════════════════════════════════════════════
 
 describe("Prompt Builder", () => {
-
   test("builds prompt with decision only", () => {
     const prompt = buildUserPrompt("Should I take this job?");
     expect(prompt).toContain("DECISION BEING CONSIDERED");
@@ -452,7 +475,7 @@ describe("Prompt Builder", () => {
     const prompt = buildUserPrompt(
       "Should I take this job?",
       "It pays well",
-      "Worried about work-life balance"
+      "Worried about work-life balance",
     );
     expect(prompt).toContain("DECISION BEING CONSIDERED");
     expect(prompt).toContain("REASONING");
@@ -467,13 +490,11 @@ describe("Prompt Builder", () => {
   });
 });
 
-
 // ════════════════════════════════════════════════════════════════════
 // Output Schema Tests
 // ════════════════════════════════════════════════════════════════════
 
 describe("Output Schema", () => {
-
   test("schema has all required fields", () => {
     const required = OUTPUT_SCHEMA.required;
     expect(required).toContain("decision");
@@ -498,13 +519,11 @@ describe("Output Schema", () => {
   });
 });
 
-
 // ════════════════════════════════════════════════════════════════════
 // API Endpoint Tests (supertest)
 // ════════════════════════════════════════════════════════════════════
 
 describe("API Endpoints", () => {
-
   test("GET /api/health returns 200", async () => {
     const res = await request(app).get("/api/health");
     expect(res.status).toBe(200);
@@ -543,7 +562,9 @@ describe("API Endpoints", () => {
   test("POST /api/analyze sanitizes HTML in input", async () => {
     const res = await request(app)
       .post("/api/analyze")
-      .send({ decision: '<script>alert("xss")</script>Should I take this job offer?' })
+      .send({
+        decision: '<script>alert("xss")</script>Should I take this job offer?',
+      })
       .set("Content-Type", "application/json");
     // Should either reject or process (depends on API key), but not crash
     expect([400, 500, 502, 200]).toContain(res.status);
@@ -583,13 +604,11 @@ describe("API Endpoints", () => {
   });
 });
 
-
 // ════════════════════════════════════════════════════════════════════
 // TEST 14: Build Verification
 // ════════════════════════════════════════════════════════════════════
 
 describe("Build Verification", () => {
-
   test("TEST 14: server module exports Express app", () => {
     expect(app).toBeDefined();
     expect(typeof app.listen).toBe("function");
@@ -613,17 +632,18 @@ describe("Build Verification", () => {
   });
 });
 
-
 // ════════════════════════════════════════════════════════════════════
 // TEST 15: Primary User Flow (E2E structure test)
 // ════════════════════════════════════════════════════════════════════
 
 describe("Primary User Flow Structure", () => {
-
   test("TEST 15: frontend HTML has all required elements", () => {
     const fs = require("fs");
     const path = require("path");
-    const html = fs.readFileSync(path.join(__dirname, "..", "public", "index.html"), "utf-8");
+    const html = fs.readFileSync(
+      path.join(__dirname, "..", "public", "index.html"),
+      "utf-8",
+    );
 
     // Form elements
     expect(html).toContain('id="decisionInput"');
@@ -632,7 +652,7 @@ describe("Primary User Flow Structure", () => {
     expect(html).toContain('id="analyzeBtn"');
 
     // Make sure we have main landmark (added via class or tag)
-    expect(html).toContain('<main');
+    expect(html).toContain("<main");
 
     // Product identity
     expect(html).toContain("Blindspot");
@@ -656,19 +676,20 @@ describe("Primary User Flow Structure", () => {
   test("frontend JS has XSS protection", () => {
     const fs = require("fs");
     const path = require("path");
-    const js = fs.readFileSync(path.join(__dirname, "..", "public", "index.html"), "utf-8");
+    const js = fs.readFileSync(
+      path.join(__dirname, "..", "public", "index.html"),
+      "utf-8",
+    );
 
     expect(js).toContain("escapeHtml");
   });
 });
-
 
 // ════════════════════════════════════════════════════════════════════
 // Evaluation Dataset Tests
 // ════════════════════════════════════════════════════════════════════
 
 describe("Evaluation Dataset Completeness", () => {
-
   test("evaluation dataset covers multiple decision types", () => {
     expect(EVALUATION_DATASET.length).toBeGreaterThanOrEqual(5);
   });
@@ -682,7 +703,7 @@ describe("Evaluation Dataset Completeness", () => {
   });
 
   test("scenarios cover diverse decision categories", () => {
-    const ids = EVALUATION_DATASET.map(s => s.id);
+    const ids = EVALUATION_DATASET.map((s) => s.id);
     expect(ids).toContain("internship");
     expect(ids).toContain("laptop");
     expect(ids).toContain("relocation");

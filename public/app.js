@@ -1,9 +1,9 @@
 /**
  * Blindspot — Frontend Application
- * 
+ *
  * Handles form submission, API communication, loading states,
  * result rendering, and error display.
- * 
+ *
  * SECURITY: No API keys in frontend. All AI calls go through /api/analyze.
  * ACCESSIBILITY: ARIA live regions, focus management, keyboard navigation.
  * EFFICIENCY: Single API call, debounce protection, disabled button during load.
@@ -11,8 +11,7 @@
 
 "use strict";
 
-(function() {
-
+(function () {
   // ── DOM References ──
   const form = document.getElementById("analysis-form");
   const decisionInput = document.getElementById("decision-input");
@@ -46,7 +45,6 @@
   let isProcessing = false;
   let loadingTimer = null;
 
-
   // ── Character Counting ──
   function updateCharCount(input, countEl, charCountEl, max) {
     const len = input.value.length;
@@ -71,16 +69,14 @@
     updateCharCount(concernsInput, concernsCount, concernsCharCount, 1000);
   });
 
-
   // ── Example Buttons ──
-  document.querySelectorAll(".example-btn").forEach(function(btn) {
-    btn.addEventListener("click", function() {
+  document.querySelectorAll(".example-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
       decisionInput.value = btn.getAttribute("data-decision");
       updateCharCount(decisionInput, decisionCount, decisionCharCount, 3000);
       decisionInput.focus();
     });
   });
-
 
   // ── Error Display ──
   function showError(msg) {
@@ -95,11 +91,10 @@
 
   errorCloseBtn.addEventListener("click", hideError);
 
-
   // ── Loading State Animation ──
   function startLoadingAnimation() {
     let step = 0;
-    loadingSteps.forEach(function(el) {
+    loadingSteps.forEach(function (el) {
       el.classList.remove("active", "done");
       var icon = el.querySelector(".loading-step-icon");
       if (icon) icon.textContent = "◌";
@@ -107,7 +102,7 @@
 
     loadingSteps[0].classList.add("active");
 
-    loadingTimer = setInterval(function() {
+    loadingTimer = setInterval(function () {
       if (step < loadingSteps.length) {
         loadingSteps[step].classList.remove("active");
         loadingSteps[step].classList.add("done");
@@ -127,7 +122,6 @@
       loadingTimer = null;
     }
   }
-
 
   // ── State Transitions ──
   function showLoading() {
@@ -164,7 +158,6 @@
     showError(msg);
   }
 
-
   // ── Sanitize text for safe DOM insertion ──
   function escapeHtml(text) {
     var div = document.createElement("div");
@@ -172,29 +165,84 @@
     return div.innerHTML;
   }
 
-
   // ── Render Results ──
   function renderResults(analysis, metadata) {
     var sections = [
-      { key: "priorities",  icon: "🧠", title: "Your Reasoning & Priorities", data: analysis.priorities, section: "priorities" },
-      { key: "facts",       icon: "✅", title: "Facts You Mentioned",         data: analysis.facts,      section: "facts" },
-      { key: "assumptions", icon: "⚠️", title: "Assumptions to Examine",     data: analysis.assumptions, section: "assumptions" },
-      { key: "blind_spots", icon: "🕳️", title: "Potential Blind Spots",      data: analysis.blind_spots, section: "blind_spots" },
-      { key: "overlooked",  icon: "🔍", title: "Overlooked Factors",          data: analysis.overlooked_factors, section: "overlooked" },
-      { key: "conflicts",   icon: "⚔️", title: "Conflicting Priorities",     data: analysis.conflicts,  section: "conflicts" },
-      { key: "unknowns",    icon: "❓", title: "Important Unknowns",          data: analysis.unknowns,   section: "unknowns" },
-      { key: "perspectives",icon: "🔄", title: "Alternative Perspectives",    data: analysis.alternative_perspectives, section: "perspectives" },
-      { key: "questions",   icon: "💡", title: "Questions Worth Exploring",   data: analysis.critical_questions, section: "questions" },
+      {
+        key: "priorities",
+        icon: "🧠",
+        title: "Your Reasoning & Priorities",
+        data: analysis.priorities,
+        section: "priorities",
+      },
+      {
+        key: "facts",
+        icon: "✅",
+        title: "Facts You Mentioned",
+        data: analysis.facts,
+        section: "facts",
+      },
+      {
+        key: "assumptions",
+        icon: "⚠️",
+        title: "Assumptions to Examine",
+        data: analysis.assumptions,
+        section: "assumptions",
+      },
+      {
+        key: "blind_spots",
+        icon: "🕳️",
+        title: "Potential Blind Spots",
+        data: analysis.blind_spots,
+        section: "blind_spots",
+      },
+      {
+        key: "overlooked",
+        icon: "🔍",
+        title: "Overlooked Factors",
+        data: analysis.overlooked_factors,
+        section: "overlooked",
+      },
+      {
+        key: "conflicts",
+        icon: "⚔️",
+        title: "Conflicting Priorities",
+        data: analysis.conflicts,
+        section: "conflicts",
+      },
+      {
+        key: "unknowns",
+        icon: "❓",
+        title: "Important Unknowns",
+        data: analysis.unknowns,
+        section: "unknowns",
+      },
+      {
+        key: "perspectives",
+        icon: "🔄",
+        title: "Alternative Perspectives",
+        data: analysis.alternative_perspectives,
+        section: "perspectives",
+      },
+      {
+        key: "questions",
+        icon: "💡",
+        title: "Questions Worth Exploring",
+        data: analysis.critical_questions,
+        section: "questions",
+      },
     ];
 
-    var html = '';
+    var html = "";
 
     // Results header
     html += '<div class="results-header">';
     html += '  <h2 class="results-title">Decision Analysis</h2>';
-    html += '  <p class="results-decision">' + escapeHtml(analysis.decision) + '</p>';
-    html += '  <p class="results-disclaimer">This analysis surfaces factors to consider — the final decision is yours.</p>';
-    html += '</div>';
+    html +=
+      '  <p class="results-decision">' + escapeHtml(analysis.decision) + "</p>";
+    html +=
+      '  <p class="results-disclaimer">This analysis surfaces factors to consider — the final decision is yours.</p>';
+    html += "</div>";
 
     // Section cards
     for (var i = 0; i < sections.length; i++) {
@@ -204,44 +252,59 @@
       // Skip empty sections
       if (!items || items.length === 0) continue;
 
-      html += '<div class="result-section" data-section="' + sec.section + '" role="region" aria-label="' + escapeHtml(sec.title) + '">';
+      html +=
+        '<div class="result-section" data-section="' +
+        sec.section +
+        '" role="region" aria-label="' +
+        escapeHtml(sec.title) +
+        '">';
       html += '  <div class="section-header">';
-      html += '    <span class="section-icon" aria-hidden="true">' + sec.icon + '</span>';
-      html += '    <h3 class="section-title">' + escapeHtml(sec.title) + '</h3>';
-      html += '    <span class="section-count">' + items.length + '</span>';
-      html += '  </div>';
+      html +=
+        '    <span class="section-icon" aria-hidden="true">' +
+        sec.icon +
+        "</span>";
+      html +=
+        '    <h3 class="section-title">' + escapeHtml(sec.title) + "</h3>";
+      html += '    <span class="section-count">' + items.length + "</span>";
+      html += "  </div>";
       html += '  <ul class="section-list" role="list">';
 
       for (var j = 0; j < items.length; j++) {
-        html += '    <li role="listitem">' + escapeHtml(items[j]) + '</li>';
+        html += '    <li role="listitem">' + escapeHtml(items[j]) + "</li>";
       }
 
-      html += '  </ul>';
-      html += '</div>';
+      html += "  </ul>";
+      html += "</div>";
     }
 
     // Reflection card
     if (analysis.reflection) {
-      html += '<div class="reflection-card" role="region" aria-label="Neutral reflection">';
+      html +=
+        '<div class="reflection-card" role="region" aria-label="Neutral reflection">';
       html += '  <div class="section-header">';
       html += '    <span class="section-icon" aria-hidden="true">🪞</span>';
       html += '    <h3 class="section-title">Neutral Reflection</h3>';
-      html += '  </div>';
-      html += '  <p class="reflection-text">' + escapeHtml(analysis.reflection) + '</p>';
-      html += '</div>';
+      html += "  </div>";
+      html +=
+        '  <p class="reflection-text">' +
+        escapeHtml(analysis.reflection) +
+        "</p>";
+      html += "</div>";
     }
 
     // Metadata
     if (metadata && metadata.guardrailTriggered) {
-      html += '<p style="text-align:center;font-size:0.75rem;color:var(--color-text-dim);margin-top:var(--space-sm);">';
-      html += '  ⚡ Safety guardrails were applied to ensure neutral analysis.';
-      html += '</p>';
+      html +=
+        '<p style="text-align:center;font-size:0.75rem;color:var(--color-text-dim);margin-top:var(--space-sm);">';
+      html += "  ⚡ Safety guardrails were applied to ensure neutral analysis.";
+      html += "</p>";
     }
 
     // New Analysis button
-    html += '<button class="new-analysis-btn" id="new-analysis-btn" aria-label="Start a new analysis">';
-    html += '  ← Analyze Another Decision';
-    html += '</button>';
+    html +=
+      '<button class="new-analysis-btn" id="new-analysis-btn" aria-label="Start a new analysis">';
+    html += "  ← Analyze Another Decision";
+    html += "</button>";
 
     resultsContainer.innerHTML = html;
     resultsContainer.setAttribute("tabindex", "-1");
@@ -249,7 +312,7 @@
     // Bind new analysis button
     var newBtn = document.getElementById("new-analysis-btn");
     if (newBtn) {
-      newBtn.addEventListener("click", function() {
+      newBtn.addEventListener("click", function () {
         hideError();
         showForm();
         decisionInput.focus();
@@ -257,9 +320,8 @@
     }
   }
 
-
   // ── Form Submission ──
-  form.addEventListener("submit", async function(e) {
+  form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     // Prevent double submission
@@ -279,7 +341,9 @@
     }
 
     if (decision.length < 10) {
-      showError("Please describe your decision in more detail (at least 10 characters).");
+      showError(
+        "Please describe your decision in more detail (at least 10 characters).",
+      );
       decisionInput.focus();
       return;
     }
@@ -294,7 +358,7 @@
         body: JSON.stringify({
           decision: decision,
           context: context,
-          concerns: concerns
+          concerns: concerns,
         }),
       });
 
@@ -302,23 +366,28 @@
       try {
         data = await response.json();
       } catch (parseErr) {
-        throw new Error("The server returned an invalid response. Please try again.");
+        throw new Error(
+          "The server returned an invalid response. Please try again.",
+        );
       }
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || "Analysis could not be completed. Please try again.");
+        throw new Error(
+          data.error || "Analysis could not be completed. Please try again.",
+        );
       }
 
       // Render results
       renderResults(data.analysis, data.metadata);
       showResults();
-
     } catch (err) {
-      var msg = err.message || "Analysis could not be completed. Please try again.";
+      var msg =
+        err.message || "Analysis could not be completed. Please try again.";
 
       // Don't show raw technical errors to users
       if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
-        msg = "Could not connect to the server. Please check your connection and try again.";
+        msg =
+          "Could not connect to the server. Please check your connection and try again.";
       }
 
       showFormWithError(msg);
@@ -326,5 +395,4 @@
 
     isProcessing = false;
   });
-
 })();

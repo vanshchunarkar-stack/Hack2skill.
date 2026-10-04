@@ -2,7 +2,7 @@
 
 /**
  * API Routes
- * 
+ *
  * Defines the /api/analyze endpoint with input validation,
  * rate limiting references, and clean error responses.
  */
@@ -41,7 +41,11 @@ router.post("/analyze", async (req, res) => {
     const cleanConcerns = sanitize(concerns || "");
 
     // Run AI analysis
-    const result = await analyzeDecision(cleanDecision, cleanContext, cleanConcerns);
+    const result = await analyzeDecision(
+      cleanDecision,
+      cleanContext,
+      cleanConcerns,
+    );
 
     if (!result.success) {
       return res.status(502).json({
@@ -55,7 +59,6 @@ router.post("/analyze", async (req, res) => {
       analysis: result.analysis,
       metadata: result.metadata,
     });
-
   } catch (err) {
     // console.error("[API] Unexpected error in /api/analyze:", err.message);
     return res.status(500).json({
@@ -64,7 +67,6 @@ router.post("/analyze", async (req, res) => {
     });
   }
 });
-
 
 // ────────────────────────────────────────────────────────────────────
 // GET /api/health — Health check
@@ -77,6 +79,5 @@ router.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
-
 
 module.exports = router;
