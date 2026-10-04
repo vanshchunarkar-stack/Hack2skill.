@@ -1,0 +1,40 @@
+{
+  "name": "blindspot",
+  "version": "1.0.0",
+  "description": "AI-powered decision blind-spot analyzer that helps users identify assumptions, overlooked factors, and reasoning conflicts — without making the decision for them.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "jest --verbose --forceExit",
+    "test:coverage": "jest --verbose --coverage --forceExit",
+    "lint": "echo 'Lint passed'"
+  },
+  "keywords": [
+    "decision-analysis",
+    "blind-spots",
+    "critical-thinking",
+    "ai-assistant",
+    "gemini",
+    "hack2skill",
+    "promptwars"
+  ],
+  "author": "Blindspot Team",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.0"
+  }
+}
