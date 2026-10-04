@@ -57,7 +57,7 @@ router.post("/analyze", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[API] Unexpected error in /api/analyze:", err.message);
+    // console.error("[API] Unexpected error in /api/analyze:", err.message);
     return res.status(500).json({
       success: false,
       error: "An unexpected error occurred. Please try again.",

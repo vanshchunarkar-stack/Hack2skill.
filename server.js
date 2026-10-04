@@ -106,8 +106,8 @@ app.use((err, req, res, _next) => {
 
 if (require.main === module) {
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[Blindspot] Server running on http://0.0.0.0:${PORT}`);
-    console.log(`[Blindspot] Environment: ${process.env.NODE_ENV || "development"}`);
+    // console.log(`[Blindspot] Server running on http://0.0.0.0:${PORT}`);
+    // console.log(`[Blindspot] Environment: ${process.env.NODE_ENV || "development"}`);
   });
 }
 

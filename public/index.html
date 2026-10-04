@@ -720,6 +720,11 @@
       simulateAnalysis();
     });
 
+    /**
+     * Sanitizes user input to prevent Cross-Site Scripting (XSS) attacks.
+     * @param {string} unsafe - The raw string input from the API or user.
+     * @returns {string} The sanitized HTML-safe string.
+     */
     const escapeHtml = (unsafe) => {
       return (unsafe || '').toString()
         .replace(/&/g, "&amp;")
@@ -729,6 +734,13 @@
         .replace(/'/g, "&#039;");
     };
 
+    /**
+     * Executes the main analysis flow by gathering form data, fetching the analysis 
+     * from the backend API, and rendering the structured results to the DOM.
+     * Integrates loading states and gracefully handles errors.
+     * @async
+     * @returns {Promise<void>}
+     */
     async function simulateAnalysis() {
       if (!decisionInput.value.trim()) {
         decisionInput.focus();

@@ -23,6 +23,11 @@ const {
 let genAI = null;
 let model = null;
 
+/**
+ * Lazily initializes and retrieves the Gemini API model instance.
+ * @returns {object} The initialized Gemini model.
+ * @throws {Error} If GEMINI_API_KEY is not configured.
+ */
 function getModel() {
   if (!model) {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -49,6 +54,13 @@ function getModel() {
 // Build the user prompt from structured input
 // ────────────────────────────────────────────────────────────────────
 
+/**
+ * Constructs the final prompt string by combining the decision, context, and concerns.
+ * @param {string} decision - The decision being considered.
+ * @param {string} [context] - The reasoning or current leaning.
+ * @param {string} [concerns] - Any specific concerns from the user.
+ * @returns {string} The formatted prompt for the AI model.
+ */
 function buildUserPrompt(decision, context, concerns) {
   let prompt = `DECISION BEING CONSIDERED:\n${decision}`;
 
